@@ -14,25 +14,35 @@ const data = JSON.parse(readJson);
 
 
 // Tell express to use body-parser's JSON parsing
-app.use(bodyParser.json())
-app.use('/', function(req,res){
-  res.sendFile(path.join(__dirname+'/index.ejs'));
-  //__dirname : It will resolve to your project folder.
+app.use(bodyParser.json());
+app.use(function (req, res, next) {
+  res.renderWithData = function (view, model, data) {
+      res.render(view, model, function (err, viewString) {
+          data.view = viewString;
+          res.json(data);
+      }); 
+  };
+  next();
 });
+// app.use('/', function(req,res){
+//   res.sendFile(path.join(__dirname+'/views/index.ejs'));
+//   //__dirname : It will resolve to your project folder.
+// });
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views'));
 app.post("/baks", (req, res) => {
     console.log(req.body);
-    
+  
     // return a text response
     const {body}=req;
     //res.send(req.body.id,req.body.status); 
      //res.redirect('/baks2?',queryString.stringify(body.data))
      const { id, status } = req.body;
-
-     data.push({ ID: data.length + 1, Title: title, Country: country });
-     fs.writeFileSync('.view/data/series.json', JSON.stringify(data, null, 4));
-     res.redirect('/');
+    data.id = id;
+    data.status = status;
+    //  data.push({ id: id, status: status});
+    //  fs.writeFileSync(path.resolve(__dirname, './views/data/series.json'), JSON.stringify(data, null, 4));
+     res.redirect('/calls');
 
     //   res.render('/baks2', {
     //   callid: body.id,
@@ -90,6 +100,11 @@ axios(config)
 
     //res.json(data);
 });
+app.get("/calls", (req, res) => {
+  console.log("in call ")
+  res.render('index',{callid:data.id, callstatus:data.status})
+});
+
 const server = http.createServer(app);
 
 server.listen(PORT ,() => console.log(`🚀 Server running on port ${PORT}`));
