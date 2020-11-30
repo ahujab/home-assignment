@@ -1,7 +1,7 @@
 import React from 'react'
 import './Call.css'
 import {useStateValue} from "./StateProvider"
-function Call({id}) {
+function Call({id,status}) {
     let callprocess=(e)=>{
         console.log(e)
         fetch('http://localhost:4830/call', {
@@ -37,7 +37,7 @@ function Call({id}) {
                 <button disabled={false} value={id} onClick={(e)=>callprocess(e)}>
                             <span>{<p>"Call Now"</p>} </span>
                             </button>
-                <p>Status: Idle</p>
+                <p>Status: {status}</p>
                 {/* <p> {id.status? id.status:"idle"}</p> */}
 
 

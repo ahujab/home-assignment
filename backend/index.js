@@ -1,7 +1,10 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const axios = require('axios');
+const ws = require('ws');
 // Initialize express and define a port
+
+const wss = new ws.Server({port: 4890})
 const app = express()
 const PORT = 3000
 const path = require('path');
@@ -12,6 +15,14 @@ const fs = require('fs');
 const readJson = fs.readFileSync(path.resolve(__dirname, './views/data/series.json'));
 const data = JSON.parse(readJson);
 
+wss.on('connection',(ws)=>{
+  ws.on('message',(message)=>{
+
+    console.log("ws message")
+  })
+  // ws.send("hello");
+
+})
 
 // Tell express to use body-parser's JSON parsing
 app.use(bodyParser.json());
@@ -35,6 +46,9 @@ app.post("/baks", (req, res) => {
   
     // return a text response
     const {body}=req;
+  wss.clients.forEach((client)=>{
+    client.send(JSON.stringify(body));
+  })
     //res.send(req.body.id,req.body.status); 
      //res.redirect('/baks2?',queryString.stringify(body.data))
      const { id, status } = req.body;
