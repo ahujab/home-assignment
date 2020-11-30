@@ -1,0 +1,12 @@
+th, tbody {
+    border: 1px solid white;
+    margin:10px
+    
+  };
+th{
+    width:"50px";
+    height:"200px"
+}
+.main{
+    padding:10px
+}
